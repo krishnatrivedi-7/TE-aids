@@ -1,0 +1,61 @@
+pr-3  code  mongo db
+
+
+// -----------------------------
+// MongoDB CRUD demo script
+// Paste into mongosh (Windows CMD -> mongosh) one block at a time or whole script.
+// -----------------------------
+
+// 1. Switch / create database
+use studentDB;
+
+// 2. (Optional) Remove collection if exists to start fresh
+db.students.drop();
+
+// 3. CREATE / INSERT: insertMany and insertOne
+db.students.insertMany([
+  { _id: 1, name: "Amit", age: 21, city: "Pune", courses: ["Math","DB"], grade: 8.5, active: true },
+  { _id: 2, name: "Riya", age: 22, city: "Mumbai", courses: ["Eng","CS"], grade: 9.1, active: true },
+  { _id: 3, name: "Vikram", age: 20, city: "Chennai", courses: ["DB","OS"], grade: 7.4, active: false }
+]);
+
+db.students.insertOne({ _id: 4, name: "Neha", age: 23, city: "Delhi", courses: ["Math","AI"], grade: 8.9, active: true });
+
+// 4. READ: show dbs / collections / view all documents
+show dbs;                      // lists databases
+show collections;              // lists collections in studentDB
+db.students.find().pretty();   // show all documents in readable form
+
+// 5. READ: queries using logical operators
+db.students.find({ age: { $gt: 21 } }).pretty();                              // age > 21
+db.students.find({ $or: [ { city: "Mumbai" }, { city: "Pune" } ] }).pretty(); // city is Mumbai OR Pune
+db.students.find({ $and: [ { active: true }, { grade: { $gte: 9.0 } } ] }).pretty(); // active AND grade >= 9.0
+db.students.find({ courses: { $in: ["AI", "DB"] } }).pretty();               // courses array has AI or DB
+
+// 6. UPDATE: updateOne and updateMany
+db.students.updateOne({ _id: 1 }, { $set: { city: "Mumbai", grade: 8.7 } });        // update specific document
+db.students.updateMany({ active: false }, { $set: { active: true } });            // update multiple documents
+
+// 7. SAVE method (legacy style) - inserts if _id doesn't exist, replaces if _id exists
+// Note: db.collection.save() may be deprecated in some shells. It still works in many labs.
+// Use only for learning; prefer insertOne/replaceOne/update in production.
+db.students.save({ _id: 5, name: "Raj", age: 24, city: "Mumbai", courses: ["Security"], grade: 7.8, active: true }); // insert new
+db.students.save({ _id: 2, name: "Riya", age: 22, city: "Mumbai", courses: ["Eng","CS","ML"], grade: 9.2, active: true }); // replaces document with _id:2
+
+// 8. REPLACE vs UPDATE example
+db.students.replaceOne({ _id: 4 }, { _id: 4, name: "Neha Verma", age: 23, city: "Delhi", grade: 9.0, active: true }); // replaces whole doc
+
+// 9. DELETE: deleteOne and deleteMany
+db.students.deleteOne({ _id: 3 });                     // deletes Vikram
+db.students.deleteMany({ grade: { $lt: 8.0 } });       // deletes all with grade < 8.0
+
+// 10. AGGREGATION / COUNT / PROJECTION examples
+db.students.find({}, { name: 1, city: 1, _id: 0 }).pretty(); // projection: show only name and city
+db.students.countDocuments();                               // total docs
+db.students.aggregate([
+  { $group: { _id: "$city", avgGrade: { $avg: "$grade" }, count: { $sum: 1 } } },
+  { $sort: { avgGrade: -1 } }
+]);
+
+// 11. Final verification: show remaining docs
+db.students.find().pretty();

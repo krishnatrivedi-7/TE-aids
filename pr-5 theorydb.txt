@@ -1,0 +1,196 @@
+pr-5 theory  
+
+
+
+
+Perfect 👍 — this is a **complete PL/SQL Cursor program** (showing all types: implicit, explicit, FOR loop, and parameterized cursor).
+Let’s go through this step-by-step — first **theory for viva**, then **code explanation**, and finally **how to install Oracle and execute this in SQL*Plus or SQL Developer**.
+
+---
+
+## 🎯 **Theory (for Viva)**
+
+### 🔹 **Aim**
+
+To write a PL/SQL block demonstrating **all types of cursors** — Implicit, Explicit, Cursor FOR Loop, and Parameterized Cursor.
+
+### 🔹 **Objective**
+
+To understand how cursors are used to process multiple rows returned by SQL queries, and how PL/SQL manages them for data handling.
+
+### 🔹 **Concept of Cursors**
+
+When a SQL query executes, Oracle creates a memory area (called the *context area*) to store the result.
+A **cursor** is a pointer to that area.
+
+There are **4 main types of cursors**:
+
+| Type                     | Description                                                                      | Example in Program                  |
+| ------------------------ | -------------------------------------------------------------------------------- | ----------------------------------- |
+| **Implicit Cursor**      | Automatically created by Oracle for `INSERT`, `UPDATE`, `DELETE`, `SELECT INTO`. | Used in the `UPDATE` statement      |
+| **Explicit Cursor**      | Declared by the programmer to fetch multiple rows manually.                      | Declared as `CURSOR emp_cur IS ...` |
+| **Cursor FOR Loop**      | Simplified cursor handling; automatically opens, fetches, and closes.            | `FOR rec IN emp_cur LOOP`           |
+| **Parameterized Cursor** | Cursor that takes parameters (like function arguments).                          | `CURSOR dept_cur(p_dept VARCHAR2)`  |
+
+---
+
+## 🧠 **Code Explanation (Step-by-Step)**
+
+### 1. **Creating Table and Data**
+
+```sql
+CREATE TABLE emp_cursor_demo (...);
+INSERT INTO emp_cursor_demo VALUES (...);
+```
+
+You create a sample table `emp_cursor_demo` and insert 4 employee records.
+
+---
+
+### 2. **Implicit Cursor Example**
+
+```sql
+UPDATE emp_cursor_demo SET salary = salary + 1000 WHERE department = 'IT';
+DBMS_OUTPUT.PUT_LINE('Implicit Cursor: ' || SQL%ROWCOUNT || ' IT employees updated.');
+```
+
+* This `UPDATE` command automatically creates an **implicit cursor**.
+* `SQL%ROWCOUNT` shows how many rows were updated.
+
+---
+
+### 3. **Explicit Cursor**
+
+```sql
+CURSOR emp_cur IS
+  SELECT emp_id, emp_name, salary FROM emp_cursor_demo WHERE salary > 30000;
+```
+
+* You manually declare and control this cursor.
+* You `OPEN`, `FETCH`, and `CLOSE` it yourself.
+* Used to display employees with salary above ₹30,000.
+
+---
+
+### 4. **Cursor FOR Loop**
+
+```sql
+FOR rec IN emp_cur LOOP
+  DBMS_OUTPUT.PUT_LINE('FOR Loop -> ' || rec.emp_name || ' earns ' || rec.salary);
+END LOOP;
+```
+
+* Oracle automatically opens, fetches, and closes this cursor.
+* Much simpler and shorter than explicit cursor handling.
+
+---
+
+### 5. **Parameterized Cursor**
+
+```sql
+CURSOR dept_cur(p_dept VARCHAR2) IS
+  SELECT emp_name, salary FROM emp_cursor_demo WHERE department = p_dept;
+```
+
+* Takes **department name** as parameter.
+* Example: `FOR rec IN dept_cur('IT') LOOP ... END LOOP;`
+* Helps in dynamic data filtering (like function arguments).
+
+---
+
+### 6. **Exception Handling**
+
+```sql
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error occurred: ' || SQLERRM);
+```
+
+Handles any unexpected runtime error gracefully.
+
+---
+
+### 7. **Output**
+
+At the end, `SELECT * FROM emp_cursor_demo;` shows the updated salary table.
+
+---
+
+## ⚙️ **How to Perform This in Oracle (Step-by-Step)**
+
+You can use **either Oracle SQL Developer** (GUI) or **SQL*Plus** (Command Line).
+Let’s go step by step from installation to execution 👇
+
+---
+
+### 🧩 **Step 1: Download and Install Oracle**
+
+1. Go to [Oracle Downloads](https://www.oracle.com/database/technologies/oracle-database-software-downloads.html)
+2. Choose:
+
+   * **Oracle Database 21c Express Edition (XE)** → *Free & lightweight*
+3. Download for **Windows**.
+4. Run installer → accept default options.
+5. Set a password for user **SYSTEM** (remember it!).
+
+---
+
+### ⚡ **Step 2: Open SQL Developer**
+
+1. Open **Oracle SQL Developer** (or download from [here](https://www.oracle.com/tools/downloads/sqldev-downloads.html)).
+2. Click on **“+” New Connection**
+
+   * Username: `SYSTEM`
+   * Password: *(the one you set during install)*
+   * Test → Connect
+
+---
+
+### ⚙️ **Step 3: Enable Output**
+
+Before running PL/SQL:
+
+```sql
+SET SERVEROUTPUT ON;
+```
+
+This ensures that `DBMS_OUTPUT.PUT_LINE` prints text to the output window.
+
+---
+
+### 💻 **Step 4: Copy & Run the Code**
+
+1. Paste the **entire program** (from `CREATE TABLE` to `SELECT * ...`).
+2. Highlight all → Press **F5** (Run Script).
+
+---
+
+### 🔍 **Step 5: View Output**
+
+* Output of `DBMS_OUTPUT.PUT_LINE` appears in the *Script Output* pane.
+* Table results appear after the `SELECT * FROM emp_cursor_demo;` statement.
+
+---
+
+### ✅ **Step 6: Verify**
+
+To check updated data:
+
+```sql
+SELECT * FROM emp_cursor_demo;
+```
+
+---
+
+## 💬 **Viva Summary Points**
+
+* **Implicit Cursor** → Automatically created by Oracle for single SQL statements.
+* **Explicit Cursor** → You manually declare and handle open/fetch/close.
+* **Cursor FOR Loop** → Simplifies explicit cursor; automatically managed.
+* **Parameterized Cursor** → Takes arguments (like department) to filter records dynamically.
+* **DBMS_OUTPUT.PUT_LINE** → Displays messages in SQL Developer output panel.
+* **Exception Handling** → Prevents the program from stopping when errors occur.
+
+---
+
+Would you like me to also give you a **shorter version** of this code (easy for typing in viva or lab)?

@@ -1,0 +1,224 @@
+pr-4 theory 
+
+
+Nice — I’ll make this **viva-ready**: short, simple theory + a plain-English line-by-line code explanation you can say in the lab, **what the code actually does (including a gotcha)**, **expected output**, and a **step-by-step run guide** for both **SQL*Plus (CMD)** and **Oracle SQL Developer**.
+
+---
+
+# Quick Aim (1-line)
+
+Give bonuses to employees using control structures (IF / LOOP) and handle errors using exceptions.
+
+---
+
+# Short Theory (for viva — memorise these lines)
+
+* **PL/SQL** = Procedural extension of SQL for Oracle; lets you use variables, loops, conditions and exceptions inside a block.
+* **Control structures** (IF, FOR) let you decide and repeat actions.
+* **Exceptions** let you catch and handle runtime errors without crashing the whole program.
+* **DBMS_OUTPUT.PUT_LINE** prints text from PL/SQL (enable server output to see it).
+
+---
+
+# Line-by-line code explanation (easy to speak in viva)
+
+**Table creation & data**
+
+```sql
+CREATE TABLE employee_bonus (...);
+INSERT INTO employee_bonus VALUES (...);
+COMMIT;
+```
+
+* Create a table `employee_bonus` with columns `emp_id, emp_name, salary, bonus`.
+* Insert 4 sample rows and save them with `COMMIT`.
+
+**Enable output**
+
+```sql
+SET SERVEROUTPUT ON;
+```
+
+* Tells Oracle to display messages printed by `DBMS_OUTPUT.PUT_LINE`.
+
+**DECLARE section**
+
+```sql
+DECLARE
+  v_emp_id employee_bonus.emp_id%TYPE;
+  v_salary employee_bonus.salary%TYPE;
+  v_bonus employee_bonus.bonus%TYPE;
+  e_low_salary EXCEPTION;
+  CURSOR emp_cur IS SELECT emp_id, salary FROM employee_bonus;
+BEGIN
+  ...
+END;
+/
+```
+
+* Declare three variables to hold current row values.
+* `e_low_salary` is a **user-defined exception** used when salary < 30000.
+* `emp_cur` is a cursor that selects `emp_id, salary` from the table.
+
+**Processing loop**
+
+```sql
+FOR rec IN emp_cur LOOP
+  v_emp_id := rec.emp_id;
+  v_salary := rec.salary;
+
+  IF v_salary < 30000 THEN
+      RAISE e_low_salary;
+  ELSIF v_salary BETWEEN 30000 AND 50000 THEN
+      v_bonus := v_salary * 0.10;
+  ELSE
+      v_bonus := v_salary * 0.15;
+  END IF;
+
+  UPDATE employee_bonus SET bonus = v_bonus WHERE emp_id = v_emp_id;
+END LOOP;
+```
+
+* `FOR rec IN emp_cur LOOP` iterates each row from the cursor automatically.
+* If salary < 30000 → **raise** the custom exception (this immediately jumps to the EXCEPTION section).
+* Otherwise compute `v_bonus` (10% or 15%) and `UPDATE` the row’s bonus.
+
+**Commit and success message**
+
+```sql
+COMMIT;
+DBMS_OUTPUT.PUT_LINE('Bonus updated successfully for all employees.');
+```
+
+* Save changes and print success text.
+
+**Exception handlers**
+
+```sql
+EXCEPTION
+  WHEN e_low_salary THEN
+    DBMS_OUTPUT.PUT_LINE('Error: Salary below 30000. Bonus not applied.');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Unexpected error occurred: ' || SQLERRM);
+END;
+/
+```
+
+* `WHEN e_low_salary` handles the custom case: prints a friendly message.
+* `WHEN OTHERS` is a catch-all that prints the Oracle error message (`SQLERRM`).
+
+**Verify**
+
+```sql
+SELECT * FROM employee_bonus;
+```
+
+* Show table contents to check `bonus` values.
+
+---
+
+# Important behaviour (the viva “gotcha” — say this!)
+
+* **Raising an exception inside the FOR loop immediately exits the PL/SQL block** and control jumps to the EXCEPTION section.
+
+  * In this script the first employee (`Amit`, salary = 25000) causes `RAISE e_low_salary` → the block exits before any updates or the `COMMIT` after the loop.
+  * Result: **no bonus updates occur** and you will see the message `"Error: Salary below 30000. Bonus not applied."`
+* If you want the program to **skip low-salary rows and continue**, you should handle the low-salary case inside the loop (for example use an inner `BEGIN ... EXCEPTION ... END;` around the update) rather than `RAISE`ing the exception that stops the whole block.
+
+---
+
+# Expected output with the code as written
+
+* DBMS output (on the console/panel):
+
+  ```
+  Error: Salary below 30000. Bonus not applied.
+  ```
+* `SELECT * FROM employee_bonus;` will show original rows with `bonus = NULL` (no updates), because `COMMIT` was not reached.
+
+---
+
+# How to run this — step-by-step
+
+### Option A — SQL*Plus (CMD)
+
+1. **Start the Oracle server** (if required by your setup).
+2. Open **Command Prompt**.
+3. Connect to the database:
+
+   ```
+   sqlplus username/password@connect_string
+   ```
+
+   or local admin:
+
+   ```
+   sqlplus / as sysdba
+   ```
+4. At the `SQL>` prompt, enable output:
+
+   ```sql
+   SET SERVEROUTPUT ON;
+   ```
+5. Paste the whole PL/SQL script (the `CREATE TABLE`, `INSERT` statements, then the `DECLARE ... END; /` block). Press Enter.
+
+   * In SQL*Plus you must end the PL/SQL block with a slash (`/`) on a new line (your script already has it).
+6. After the script runs, run:
+
+   ```sql
+   SELECT * FROM employee_bonus;
+   ```
+
+   and inspect results.
+7. To see DBMS output messages, they appear right in the SQL*Plus window because `SET SERVEROUTPUT ON` was used.
+
+### Option B — Oracle SQL Developer (GUI)
+
+1. Open **SQL Developer** and connect to your schema.
+2. Open a **SQL Worksheet** (right-click connection → Open SQL Worksheet).
+3. **Enable DBMS Output panel**: in the bottom area, open the *DBMS Output* tab, click the green **+** and enable for your connection.
+4. Copy the script into the worksheet.
+5. Run as a **script** (press **F5** or click the “Run Script” button). (Use F5, not Ctrl+Enter, so script output and DBMS_OUTPUT are shown.)
+6. Observe messages in DBMS Output tab. Run `SELECT * FROM employee_bonus;` (Ctrl+Enter) to view table rows in the Results grid.
+
+---
+
+# How to modify so the block continues on low salaries (quick note you can say)
+
+If you want to **log low salary and continue** (instead of stopping the whole block), wrap the per-row logic in an inner block:
+
+```plsql
+FOR rec IN emp_cur LOOP
+  BEGIN
+    IF rec.salary < 30000 THEN
+       DBMS_OUTPUT.PUT_LINE('Low salary for emp '||rec.emp_id||' — skipped.');
+    ELSE
+       -- compute and update bonus
+    END IF;
+  EXCEPTION
+    WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Error for emp '||rec.emp_id||': '||SQLERRM);
+  END;
+END LOOP;
+COMMIT;
+```
+
+This inner `BEGIN...EXCEPTION...END;` lets you handle errors per row and continue the loop.
+
+---
+
+# One-minute viva answers (memorise)
+
+* **PL/SQL**: procedural SQL for Oracle with variables and exceptions.
+* **Control structures**: `IF`, `ELSIF`, `ELSE`, and loops (`FOR ... LOOP`).
+* **Cursor**: fetches rows to process one by one.
+* **RAISE**: triggers a user-defined exception.
+* **Exception section**: `WHEN e_name THEN` handles errors; `WHEN OTHERS` is catch-all.
+* **DBMS_OUTPUT** prints messages; enable it with `SET SERVEROUTPUT ON`.
+
+---
+
+If you want, I can:
+
+* Give a corrected version that **continues** instead of exiting (so you can show successful bonuses updated for all possible employees), or
+* Provide a one-page viva cheat sheet PDF with the theory + key phrases. Which would you prefer?

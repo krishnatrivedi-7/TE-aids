@@ -1,0 +1,116 @@
+--pr-2 code
+
+
+-- ---------------------------------------------------------
+-- SQL PRACTICAL: Joins, Sub-Queries, and Views
+-- Works in both MySQL Workbench and Command Prompt
+-- ---------------------------------------------------------
+
+-- 1️⃣ Create and Select Database
+CREATE DATABASE company2;
+USE company2;
+
+-- 2️⃣ Create Tables: Departments and Employees
+CREATE TABLE Departments (
+    dept_id INT PRIMARY KEY AUTO_INCREMENT,
+    dept_name VARCHAR(30),
+    location VARCHAR(30)
+);
+
+CREATE TABLE Employees (
+    emp_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    dept_id INT,
+    salary DECIMAL(10,2),
+    city VARCHAR(30),
+    hire_date DATE,
+    FOREIGN KEY (dept_id) REFERENCES Departments(dept_id)
+);
+
+-- 3️⃣ Insert Values into Departments
+INSERT INTO Departments (dept_name, location)
+VALUES
+('IT', 'Mumbai'),
+('HR', 'Delhi'),
+('Finance', 'Pune'),
+('Sales', 'Chennai');
+
+-- 4️⃣ Insert Values into Employees
+INSERT INTO Employees (first_name, last_name, dept_id, salary, city, hire_date)
+VALUES
+('John', 'Doe', 1, 55000, 'Mumbai', '2020-05-10'),
+('Riya', 'Patel', 1, 50000, 'Mumbai', '2021-06-01'),
+('Jane', 'Smith', 2, 48000, 'Delhi', '2019-08-20'),
+('Amit', 'Sharma', 3, 60000, 'Pune', '2021-03-15'),
+('Vikram', 'Singh', 4, 45000, 'Chennai', '2018-11-10');
+
+-- ---------------------------------------------------------
+-- 🧠 JOINS SECTION
+-- ---------------------------------------------------------
+
+-- 5️⃣ INNER JOIN: Shows employees with their department name
+SELECT e.first_name, e.last_name, d.dept_name, e.salary
+FROM Employees e
+INNER JOIN Departments d ON e.dept_id = d.dept_id;
+
+-- 6️⃣ LEFT JOIN: Shows all employees, even if they don’t belong to a department
+SELECT e.first_name, e.last_name, d.dept_name
+FROM Employees e
+LEFT JOIN Departments d ON e.dept_id = d.dept_id;
+
+-- 7️⃣ RIGHT JOIN: Shows all departments, even if they have no employees
+SELECT e.first_name, e.last_name, d.dept_name
+FROM Employees e
+RIGHT JOIN Departments d ON e.dept_id = d.dept_id;
+
+-- 8️⃣ CROSS JOIN: Shows all possible combinations
+SELECT e.first_name, d.dept_name
+FROM Employees e
+CROSS JOIN Departments d;
+
+-- ---------------------------------------------------------
+-- 🧠 SUB-QUERY SECTION
+-- ---------------------------------------------------------
+
+-- 9️⃣ Sub-query (Single Row): Find employees who earn more than average salary
+SELECT first_name, last_name, salary
+FROM Employees
+WHERE salary > (SELECT AVG(salary) FROM Employees);
+
+-- 🔟 Sub-query (Multiple Row): Employees who work in same city as HR employees
+SELECT first_name, city
+FROM Employees
+WHERE city IN (SELECT location FROM Departments WHERE dept_name = 'HR');
+
+-- 1️⃣1️⃣ Correlated Sub-query: Find employees whose salary is greater than
+-- the average salary of their department
+SELECT first_name, salary, dept_id
+FROM Employees e1
+WHERE salary > (SELECT AVG(salary) FROM Employees e2 WHERE e1.dept_id = e2.dept_id);
+
+-- ---------------------------------------------------------
+-- 🧠 VIEW SECTION
+-- ---------------------------------------------------------
+
+-- 1️⃣2️⃣ Create View to show high-salary employees
+CREATE VIEW HighSalaryEmployees AS
+SELECT first_name, last_name, salary, dept_id
+FROM Employees
+WHERE salary > 50000;
+
+-- 👉 View Output
+SELECT * FROM HighSalaryEmployees;
+
+-- 1️⃣3️⃣ Create View joining Employees and Departments
+CREATE VIEW EmpDeptDetails AS
+SELECT e.first_name, e.last_name, d.dept_name, e.salary, e.city
+FROM Employees e
+JOIN Departments d ON e.dept_id = d.dept_id;
+
+-- 👉 View Output
+SELECT * FROM EmpDeptDetails;
+
+-- ---------------------------------------------------------
+-- ✅ END OF SCRIPT
+-- ---------------------------------------------------------

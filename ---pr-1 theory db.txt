@@ -1,0 +1,188 @@
+---pr-1 theory
+
+
+
+Perfect 👍 — let’s go step-by-step through the **theory (explanation)** of your full SQL code.
+This explanation matches your **lab objective:** *“SQL queries using Insert, Select, Update, Delete with operators, functions, and set operators etc.”*
+
+---
+
+## 🧠 **THEORY / EXPLANATION**
+
+---
+
+### **1️⃣ CREATE DATABASE and TABLE**
+
+```sql
+CREATE DATABASE company;
+USE company;
+```
+
+* **Purpose:** A *database* stores all related tables.
+* `USE company;` tells MySQL to work inside that database.
+
+```sql
+CREATE TABLE Employees (...);
+```
+
+* Creates a table called **Employees** to hold employee records.
+* Each column (like `first_name`, `salary`, `department`) stores one type of data.
+* `emp_id INT PRIMARY KEY AUTO_INCREMENT` makes each employee get a **unique automatic ID**.
+
+---
+
+### **2️⃣ INSERT DATA**
+
+```sql
+INSERT INTO Employees (...) VALUES (...);
+```
+
+* Adds multiple employee records into the table.
+* Each `VALUES` row represents one new record.
+* After insertion, you can view them using `SELECT * FROM Employees;`.
+
+---
+
+### **3️⃣ SELECT QUERIES (Retrieving Data)**
+
+```sql
+SELECT * FROM Employees;
+```
+
+* Displays all records and all columns.
+
+**Operators & Conditions:**
+
+* `>` , `<` , `>=`, `<=`, `=` → used to compare numeric or text values.
+* `AND`, `OR` → combine multiple conditions.
+* `BETWEEN` → selects a range of values.
+* `LIKE 'J%'` → finds names starting with “J”.
+* `IN ('Delhi','Pune')` → matches values from a list.
+* `ORDER BY salary DESC` → sorts results by salary in descending order.
+
+**Functions:**
+
+* `COUNT()` → counts total rows.
+* `AVG()` → finds average salary.
+* `SUM()` → adds total salary.
+* `GROUP BY department` → groups records department-wise to calculate totals.
+
+---
+
+### **4️⃣ UPDATE QUERY**
+
+```sql
+UPDATE Employees SET salary = salary + 5000 WHERE department = 'IT';
+```
+
+* Increases the salary of all employees in the **IT department** by ₹5000.
+* Always use `WHERE` to specify which rows to change; otherwise, all rows update.
+
+---
+
+### **5️⃣ DELETE QUERY**
+
+```sql
+DELETE FROM Employees WHERE emp_id = 5;
+```
+
+* Removes the employee whose ID is **5**.
+* Always use `WHERE`; without it, **all rows** will be deleted.
+
+---
+
+### **6️⃣ VIEW**
+
+```sql
+CREATE VIEW IT_Employees AS
+SELECT first_name, last_name, salary FROM Employees WHERE department = 'IT';
+```
+
+* A **View** is a *virtual table* based on a SELECT query.
+* It does not store data separately — it shows results from the original table dynamically.
+* You can access it using:
+
+  ```sql
+  SELECT * FROM IT_Employees;
+  ```
+* Benefits: Simplifies complex queries and improves data security (shows limited columns).
+
+---
+
+### **7️⃣ INDEX**
+
+```sql
+CREATE INDEX idx_city ON Employees(city);
+```
+
+* An **Index** speeds up searches for queries that use the column `city`.
+* Think of it as a “table of contents” for faster lookup.
+* You can verify using:
+
+  ```sql
+  SHOW INDEX FROM Employees;
+  ```
+* The `EXPLAIN` command checks whether the index is being used in a query.
+
+---
+
+### **8️⃣ SET OPERATORS**
+
+These combine results from two or more queries.
+
+1. **UNION**
+
+   ```sql
+   SELECT first_name, city FROM Employees
+   UNION
+   SELECT first_name, city FROM Old_Employees;
+   ```
+
+   * Combines results of both tables and **removes duplicates**.
+
+2. **INTERSECT (Simulated via INNER JOIN)**
+
+   ```sql
+   SELECT e.first_name, e.city FROM Employees e
+   INNER JOIN Old_Employees o ON e.first_name = o.first_name;
+   ```
+
+   * Shows only names that appear in **both** tables.
+
+3. **MINUS (Simulated via LEFT JOIN and IS NULL)**
+
+   ```sql
+   SELECT e.first_name, e.city FROM Employees e
+   LEFT JOIN Old_Employees o ON e.first_name = o.first_name
+   WHERE o.first_name IS NULL;
+   ```
+
+   * Shows records present in **Employees** but **not in Old_Employees**.
+
+---
+
+### **9️⃣ CLEAN-UP COMMANDS (Optional)**
+
+* `DROP VIEW IT_Employees;` → deletes the view.
+* `DROP INDEX idx_city ON Employees;` → removes the index.
+* `DROP TABLE Employees;` → deletes the table structure and data.
+* `DROP DATABASE company;` → removes the entire database.
+
+---
+
+## 🧭 **SUMMARY TABLE**
+
+| Operation | SQL Command                  | Purpose                            |
+| --------- | ---------------------------- | ---------------------------------- |
+| Create    | `CREATE DATABASE / TABLE`    | Creates database & table structure |
+| Insert    | `INSERT INTO`                | Adds records                       |
+| Select    | `SELECT ...`                 | Retrieves records                  |
+| Update    | `UPDATE ... SET ...`         | Modifies records                   |
+| Delete    | `DELETE FROM ...`            | Removes records                    |
+| View      | `CREATE VIEW`                | Creates virtual table              |
+| Index     | `CREATE INDEX`               | Improves search performance        |
+| Set Ops   | `UNION`, `JOIN`, `LEFT JOIN` | Combines data between tables       |
+
+---
+
+Would you like me to write this **same explanation in short report format** (like for your lab file — with “Aim, Theory, Result, Conclusion” headings)?

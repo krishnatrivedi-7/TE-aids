@@ -1,0 +1,113 @@
+Perfect 👍 — here’s a **simple viva explanation** for your SQL code (easy to remember and explain in your own words):
+
+---
+
+## 🎯 **Aim:**
+
+To write SQL queries using **Joins**, **Sub-queries**, and **Views**.
+
+## 🧩 **Objective:**
+
+To understand how to:
+
+* Combine tables using **joins**
+* Use **subqueries** to get data from one query inside another
+* Create and use **views** to simplify data access
+
+---
+
+## 🧠 **Theory (in Simple English)**
+
+### 🔹 1. What are Joins?
+
+* **Joins** are used to combine data from two or more tables based on a related column.
+* It helps you see meaningful combined results (like employees with their department names).
+
+**Types of Joins used:**
+
+* **INNER JOIN** → shows only matching rows from both tables.
+* **LEFT JOIN** → shows all employees, even if they don’t have a matching department.
+* **RIGHT JOIN** → shows all departments, even if they have no employees.
+* **CROSS JOIN** → shows all possible combinations between two tables.
+
+---
+
+### 🔹 2. What are Subqueries?
+
+* A **Subquery** means a query inside another query.
+* It helps when we want to use the result of one query in another.
+
+**Types used here:**
+
+1. **Single-row subquery** → compares one value (like average salary).
+2. **Multi-row subquery** → compares multiple values using `IN`.
+3. **Correlated subquery** → inner query depends on the outer query (for example, comparing employee salary with department average).
+
+---
+
+### 🔹 3. What is a View?
+
+* A **View** is a **virtual table** based on the result of a SQL query.
+* It does not store data permanently, but it shows data from tables in a simplified way.
+* Example: We created a view to show only **high-salary employees** or **employee details with department names**.
+
+---
+
+## 💻 **Code Explanation (Step-by-Step)**
+
+###1️⃣ **Database and Tables**
+
+* `CREATE DATABASE company2;` → makes a new database.
+* `CREATE TABLE Departments` and `CREATE TABLE Employees` → creates two related tables.
+* `FOREIGN KEY (dept_id)` → links Employees with Departments.
+
+---
+
+### 2️⃣ **Insert Data**
+
+* Insert sample data into both tables using `INSERT INTO`.
+
+---
+
+### 3️⃣ **Joins**
+
+* **INNER JOIN:** Shows employees with department name → only matching records.
+* **LEFT JOIN:** Shows all employees (some may not have a department).
+* **RIGHT JOIN:** Shows all departments (some may not have employees).
+* **CROSS JOIN:** Makes all possible employee–department combinations.
+
+---
+
+### 4️⃣ **Subqueries**
+
+* **Single-row:** Employees earning more than the average salary.
+* **Multiple-row:** Employees in the same city as HR department.
+* **Correlated:** Employee salary greater than average salary of their department.
+
+---
+
+### 5️⃣ **Views**
+
+* **HighSalaryEmployees view:** Shows employees with salary > 50000.
+* **EmpDeptDetails view:** Joins Employees and Departments to show full details.
+
+You can display view results using:
+
+```sql
+SELECT * FROM HighSalaryEmployees;
+SELECT * FROM EmpDeptDetails;
+```
+
+---
+
+## ✅ **In Short (For Quick Viva Answers)**
+
+| Concept      | Meaning                           | Example in Code                          |
+| ------------ | --------------------------------- | ---------------------------------------- |
+| **JOIN**     | Combine data from multiple tables | INNER JOIN Employees & Departments       |
+| **SUBQUERY** | Query inside another query        | Find salary > average salary             |
+| **VIEW**     | Virtual table                     | `CREATE VIEW HighSalaryEmployees AS ...` |
+
+---
+
+Would you like me to make a **1-page viva summary sheet (PDF)** with short definitions + sample queries from this code? It’ll help you during your lab exam.

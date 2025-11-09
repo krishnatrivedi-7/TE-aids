@@ -1,0 +1,134 @@
+-- ---------------------------------------------------------
+--  SQL Script: Insert, Select, Update, Delete, View, Index, etc.
+--  Works in both MySQL Workbench and Command Prompt
+-- ---------------------------------------------------------
+
+-- 1️⃣ Create Database and Use It
+CREATE DATABASE company;
+USE company;
+
+-- 2️⃣ Create Table
+CREATE TABLE Employees (
+    emp_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30),
+    department VARCHAR(30),
+    hire_date DATE,
+    salary DECIMAL(10,2),
+    city VARCHAR(30)
+);
+
+-- 3️⃣ Insert Records into Employees Table
+INSERT INTO Employees (first_name, last_name, department, hire_date, salary, city)
+VALUES 
+('John', 'Doe', 'IT', '2020-05-10', 55000, 'Mumbai'),
+('Jane', 'Smith', 'HR', '2019-08-20', 48000, 'Delhi'),
+('Amit', 'Sharma', 'Finance', '2021-03-15', 60000, 'Pune'),
+('Riya', 'Patel', 'IT', '2022-06-01', 52000, 'Mumbai'),
+('Vikram', 'Singh', 'Sales', '2018-11-10', 45000, 'Chennai');
+
+-- 4️⃣ Display All Records
+SELECT * FROM Employees;
+
+-- 5️⃣ Use Operators and Functions in SELECT
+SELECT first_name, last_name, salary FROM Employees WHERE salary > 50000;
+SELECT * FROM Employees WHERE department = 'IT' AND city = 'Mumbai';
+SELECT * FROM Employees WHERE salary BETWEEN 45000 AND 55000;
+SELECT * FROM Employees WHERE first_name LIKE 'J%';
+SELECT * FROM Employees WHERE city IN ('Delhi', 'Pune');
+SELECT * FROM Employees ORDER BY salary DESC;
+SELECT COUNT(*) AS Total_Employees, AVG(salary) AS Avg_Salary FROM Employees;
+SELECT department, SUM(salary) AS Total_Salary FROM Employees GROUP BY department;
+
+-- 6️⃣ UPDATE Example
+UPDATE Employees SET salary = salary + 5000 WHERE department = 'IT';
+
+-- 👉 Check Updated Data
+SELECT * FROM Employees WHERE department = 'IT';
+
+-- 7️⃣ DELETE Example
+DELETE FROM Employees WHERE emp_id = 5;
+
+-- 👉 Check Table After Deletion
+SELECT * FROM Employees;
+
+-- 8️⃣ CREATE VIEW Example
+CREATE VIEW IT_Employees AS
+SELECT first_name, last_name, salary FROM Employees WHERE department = 'IT';
+
+-- 👉 Display View Output
+SELECT * FROM IT_Employees;
+
+-- 👉 Show All Views in Database
+SHOW FULL TABLES WHERE table_type = 'VIEW';
+
+-- 9️⃣ CREATE INDEX Example
+CREATE INDEX idx_city ON Employees(city);
+
+-- 👉 Show Index Information
+SHOW INDEX FROM Employees;
+
+-- 👉 Optional: Check if Index Is Used (Performance View)
+EXPLAIN SELECT * FROM Employees WHERE city = 'Mumbai';
+
+-- 🔟 Set Operators Examples
+-- Create another table for demonstration
+CREATE TABLE Old_Employees (
+    emp_id INT,
+    first_name VARCHAR(30),
+    city VARCHAR(30)
+);
+
+-- Insert records into Old_Employees
+INSERT INTO Old_Employees VALUES 
+(6, 'Raj', 'Mumbai'),
+(7, 'Anita', 'Delhi'),
+(1, 'John', 'Mumbai');
+
+-- UNION: Combine both tables (removes duplicates)
+SELECT first_name, city FROM Employees
+UNION
+SELECT first_name, city FROM Old_Employees;
+
+-- INTERSECT equivalent using INNER JOIN
+SELECT e.first_name, e.city FROM Employees e
+INNER JOIN Old_Employees o ON e.first_name = o.first_name;
+
+-- MINUS equivalent using LEFT JOIN
+SELECT e.first_name, e.city FROM Employees e
+LEFT JOIN Old_Employees o ON e.first_name = o.first_name
+WHERE o.first_name IS NULL;
+
+-- 1️⃣1️⃣ Optional Clean-Up Commands (Use if you want to reset)
+-- DROP VIEW IT_Employees;
+-- DROP INDEX idx_city ON Employees;
+-- DROP TABLE Old_Employees;
+-- DROP TABLE Employees;
+-- DROP DATABASE company;
+
+-- ---------------------------------------------------------
+-- ✅ END OF SCRIPT
+-- ---------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,263 @@
+pr-3 theory
+
+
+Perfect 👍 — you’ve got a full MongoDB practical code covering **CRUD**, **save()**, **logical operators**, and **aggregation**.
+Let’s go over this in **simple English** — so you can easily explain it in **viva** and **also know how to run it step-by-step in CMD** 👇
+
+---
+
+## 🎯 **Aim:**
+
+To perform **MongoDB CRUD (Create, Read, Update, Delete)** operations using `insert`, `find`, `update`, `delete`, `save()` and logical operators.
+
+## 🧩 **Objective:**
+
+* Learn how to insert, read, update, delete, and modify data in MongoDB.
+* Use logical operators like `$and`, `$or`, `$gt`, `$in`, etc.
+* Understand the use of the `save()` method.
+* Perform simple aggregation and projection queries.
+
+---
+
+## 🧠 **Theory (Simple Viva Explanation)**
+
+### 🔹 What is MongoDB?
+
+* MongoDB is a **NoSQL database** that stores data in **JSON-like documents** instead of tables.
+* Each document is like a row in SQL but more flexible — it can store arrays, objects, etc.
+
+---
+
+### 🔹 CRUD Operations in MongoDB
+
+CRUD = **Create, Read, Update, Delete**
+
+| Operation  | Command                                 | Meaning                     |
+| ---------- | --------------------------------------- | --------------------------- |
+| **Create** | `insertOne()`, `insertMany()`, `save()` | Adds new documents          |
+| **Read**   | `find()`, `findOne()`                   | Retrieves data              |
+| **Update** | `updateOne()`, `updateMany()`, `$set`   | Modifies existing documents |
+| **Delete** | `deleteOne()`, `deleteMany()`           | Removes documents           |
+
+---
+
+### 🔹 Logical Operators
+
+Used inside `find()` to filter data:
+
+* `$and`: Both conditions true
+* `$or`: Any one condition true
+* `$gt`: Greater than
+* `$lt`: Less than
+* `$in`: Matches any value in an array
+
+Example:
+
+```js
+db.students.find({ $or: [ { city: "Mumbai" }, { age: { $gt: 21 } } ] })
+```
+
+---
+
+### 🔹 save() Method
+
+* `save()` can **insert** a new document or **replace** an existing one (if `_id` already exists).
+* Example:
+
+  * If `_id` doesn’t exist → adds new document
+  * If `_id` exists → replaces the old one completely
+
+---
+
+### 🔹 Aggregation
+
+* `aggregate()` is used for calculations like average, count, grouping, etc.
+  Example:
+
+```js
+db.students.aggregate([
+  { $group: { _id: "$city", avgGrade: { $avg: "$grade" } } }
+])
+```
+
+→ shows average grade per city.
+
+---
+
+### 🔹 Projection
+
+* Projection means showing **selected fields only** (like `SELECT name, city FROM ...` in SQL)
+
+```js
+db.students.find({}, { name: 1, city: 1, _id: 0 })
+```
+
+---
+
+## 🧩 **Code Explanation (Simple Step-by-Step)**
+
+1. **Create and Switch Database**
+
+   ```js
+   use studentDB
+   ```
+
+   → Creates (if not already) and switches to database `studentDB`.
+
+2. **Drop Collection**
+
+   ```js
+   db.students.drop()
+   ```
+
+   → Deletes old `students` collection (start fresh).
+
+3. **Insert Data**
+
+   * `insertMany()` adds multiple students.
+   * `insertOne()` adds one student.
+
+4. **Read / Display Data**
+
+   ```js
+   db.students.find().pretty()
+   ```
+
+   → Shows all documents in readable form.
+
+5. **Filter Using Logical Operators**
+
+   ```js
+   db.students.find({ age: { $gt: 21 } })
+   ```
+
+   → Shows students older than 21.
+
+6. **Update Data**
+
+   * Change data in one or many documents using `$set`.
+
+   ```js
+   db.students.updateOne({ _id: 1 }, { $set: { city: "Mumbai" } })
+   ```
+
+7. **Save Method**
+
+   * Insert new or replace existing record.
+
+   ```js
+   db.students.save({ _id: 5, name: "Raj", age: 24 })
+   ```
+
+8. **Replace Whole Document**
+
+   ```js
+   db.students.replaceOne({ _id: 4 }, { _id: 4, name: "Neha Verma" })
+   ```
+
+9. **Delete Data**
+
+   ```js
+   db.students.deleteOne({ _id: 3 })
+   db.students.deleteMany({ grade: { $lt: 8.0 } })
+   ```
+
+10. **Aggregation and Projection**
+
+* Only show name and city:
+
+  ```js
+  db.students.find({}, { name: 1, city: 1, _id: 0 })
+  ```
+* Count total:
+
+  ```js
+  db.students.countDocuments()
+  ```
+* Find average grade per city:
+
+  ```js
+  db.students.aggregate([
+    { $group: { _id: "$city", avgGrade: { $avg: "$grade" } } }
+  ])
+  ```
+
+11. **Final Verification**
+
+```js
+db.students.find().pretty()
+```
+
+→ Shows remaining documents.
+
+---
+
+## 💻 **How to Perform This Step-by-Step in CMD**
+
+### Step 1: Start MongoDB server
+
+If installed as service, it starts automatically.
+If not, run this (change version if needed):
+
+```bash
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe"
+```
+
+Keep this window open (server runs here).
+
+---
+
+### Step 2: Open a new CMD window and run shell
+
+```bash
+"C:\Program Files\MongoDB\Server\8.0\bin\mongosh"
+```
+
+Now you’ll see prompt like:
+
+```
+test>
+```
+
+---
+
+### Step 3: Copy and paste your MongoDB script (one block at a time)
+
+Start with:
+
+```js
+use studentDB
+```
+
+Then paste next lines in order (insert, find, update, etc.)
+
+---
+
+### Step 4: See the output
+
+| Command                       | What You’ll See                     |
+| ----------------------------- | ----------------------------------- |
+| `show dbs`                    | List of databases                   |
+| `show collections`            | List of collections                 |
+| `db.students.find().pretty()` | All documents nicely formatted      |
+| `updateOne`, `deleteOne`      | Will show “Acknowledged” messages   |
+| `aggregate`                   | Group results (average grades etc.) |
+
+---
+
+## ✅ **Quick Viva Answers (Short Lines)**
+
+| Question                                           | Simple Answer                                                             |
+| -------------------------------------------------- | ------------------------------------------------------------------------- |
+| What is MongoDB?                                   | A NoSQL database that stores data in JSON documents.                      |
+| What is CRUD?                                      | Create, Read, Update, Delete.                                             |
+| What does `save()` do?                             | Inserts if `_id` not found, replaces if `_id` exists.                     |
+| What are logical operators?                        | `$and`, `$or`, `$gt`, `$lt`, `$in`, used to filter data.                  |
+| What is projection?                                | Selecting specific fields using `{ field: 1 }`.                           |
+| What is aggregation?                               | Grouping and calculating data like AVG or COUNT.                          |
+| What is the difference between update and replace? | `update` changes selected fields, `replace` replaces the entire document. |
+
+---
+
+Would you like me to make a **one-page viva summary sheet (PDF)** for this MongoDB practical (definitions + short answers + sample queries)?
+It’ll be great for quick revision before lab.
